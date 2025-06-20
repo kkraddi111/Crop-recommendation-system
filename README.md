@@ -6,6 +6,7 @@
 [![ML](https://img.shields.io/badge/Machine-Learning-red.svg)](https://scikit-learn.org)
 
 📖 Introduction
+
 The Crop Recommendation System is an intelligent agricultural solution that helps farmers make informed decisions about crop selection based on soil conditions and environmental factors. Using machine learning algorithms, the system analyzes soil nutrients (N-P-K values), environmental conditions (temperature, humidity, rainfall), and pH levels to recommend the most suitable crops for cultivation.
 
 ⭐ Features
