@@ -81,7 +81,7 @@ The Crop Recommendation System is an intelligent agricultural solution that help
 
 1. Clone the Repository
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/kkraddi111/Crop-recommendation-system
    cd Agri
    ```
 
