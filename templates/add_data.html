@@ -1,0 +1,169 @@
+{% extends "nav.html" %}
+
+{% block content %}
+{% load static %}  
+
+<!-- Add Data Form Start -->
+<div class="container-fluid py-5">
+    <div class="container">
+        <div class="mx-auto text-center mb-5" style="max-width: 500px;">
+            <h6 class="text-primary text-uppercase">Add Dataset Entry</h6>
+            <h1 class="display-5">Add New Crop Data</h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="bg-primary h-100 p-5">
+                    <form method="post" id="dataForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="entry_id" id="entry_id">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <input type="number" class="form-control bg-light border-0 px-4" name="n" id="n" placeholder="Nitrogen (N)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" class="form-control bg-light border-0 px-4" name="p" id="p" placeholder="Phosphorus (P)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" class="form-control bg-light border-0 px-4" name="k" id="k" placeholder="Potassium (K)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" step="0.01" class="form-control bg-light border-0 px-4" name="temperature" id="temperature" placeholder="Temperature (°C)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" step="0.01" class="form-control bg-light border-0 px-4" name="humidity" id="humidity" placeholder="Humidity (%)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" step="0.01" class="form-control bg-light border-0 px-4" name="ph" id="ph" placeholder="pH Level" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="number" step="0.01" class="form-control bg-light border-0 px-4" name="rainfall" id="rainfall" placeholder="Rainfall (mm)" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <input type="text" class="form-control bg-light border-0 px-4" name="label" id="label" placeholder="Crop Name" style="height: 55px;" required>
+                            </div>
+                            <div class="col-12">
+                                <button class="btn btn-secondary w-100 py-3" type="submit" id="submitBtn">Add to Dataset</button>
+                            </div>
+                            <div class="col-12" id="cancelDiv" style="display: none;">
+                                <button class="btn btn-light w-100 py-3" type="button" onclick="resetForm()">Cancel Edit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Additions -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="bg-light p-4">
+                    <h4 class="mb-4">Recent Additions</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Crop</th>
+                                    <th>N-P-K</th>
+                                    <th>Temperature</th>
+                                    <th>Humidity</th>
+                                    <th>pH</th>
+                                    <th>Rainfall</th>
+                                    <th>Added</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for entry in recent_entries %}
+                                <tr>
+                                    <td>{{ entry.label }}</td>
+                                    <td>{{ entry.n }}-{{ entry.p }}-{{ entry.k }}</td>
+                                    <td>{{ entry.temperature }}°C</td>
+                                    <td>{{ entry.humidity }}%</td>
+                                    <td>{{ entry.ph }}</td>
+                                    <td>{{ entry.rainfall }}mm</td>
+                                    <td>{{ entry.added_at|date:"M d, Y H:i" }}</td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-sm" 
+                                            data-id="{{ entry.id }}"
+                                            data-label="{{ entry.label }}"
+                                            data-n="{{ entry.n }}"
+                                            data-p="{{ entry.p }}"
+                                            data-k="{{ entry.k }}"
+                                            data-temperature="{{ entry.temperature }}"
+                                            data-humidity="{{ entry.humidity }}"
+                                            data-ph="{{ entry.ph }}"
+                                            data-rainfall="{{ entry.rainfall }}"
+                                            onclick="editEntry(this)">
+                                            <i class="fa fa-edit"></i>
+                                        </button>
+                                        <form method="post" action="{% url 'delete_data' entry.id %}" style="display: inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this entry?')">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add Data Form End -->
+
+{% for message in messages %}
+<script>
+    alert("{{ message }}");
+</script>
+{% endfor %}
+
+<script>
+function editEntry(button) {
+    // Get data from button attributes
+    const id = button.getAttribute('data-id');
+    const label = button.getAttribute('data-label');
+    const n = button.getAttribute('data-n');
+    const p = button.getAttribute('data-p');
+    const k = button.getAttribute('data-k');
+    const temp = button.getAttribute('data-temperature');
+    const humid = button.getAttribute('data-humidity');
+    const ph = button.getAttribute('data-ph');
+    const rainfall = button.getAttribute('data-rainfall');
+
+    // Set form values
+    document.getElementById('entry_id').value = id;
+    document.getElementById('label').value = label;
+    document.getElementById('n').value = n;
+    document.getElementById('p').value = p;
+    document.getElementById('k').value = k;
+    document.getElementById('temperature').value = temp;
+    document.getElementById('humidity').value = humid;
+    document.getElementById('ph').value = ph;
+    document.getElementById('rainfall').value = rainfall;
+    
+    // Update form appearance
+    document.getElementById('submitBtn').textContent = 'Update Entry';
+    document.getElementById('cancelDiv').style.display = 'block';
+    document.getElementById('dataForm').action = '/farmer/edit-data/' + id;
+    
+    // Scroll to form
+    document.querySelector('.bg-primary').scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetForm() {
+    // Clear form
+    document.getElementById('dataForm').reset();
+    document.getElementById('entry_id').value = '';
+    
+    // Reset form appearance
+    document.getElementById('submitBtn').textContent = 'Add to Dataset';
+    document.getElementById('cancelDiv').style.display = 'none';
+    document.getElementById('dataForm').action = '';
+}
+</script>
+
+{% endblock %}
